@@ -1,0 +1,30 @@
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <!-- Isolated worker model base -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.0.7" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" OutputItemType="Analyzer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.24.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage" Version="6.4.0" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.24.0" />
+  </ItemGroup>
+  <ItemGroup>
+ 
+    <ProjectReference Include="..\OrderMicroservice.Domain\OrderMicroservice.Domain.csproj" />
+    <ProjectReference Include="..\OrderMicroservice.Service\OrderMicroservice.Service.csproj" />
+    <ProjectReference Include="..\OrderMicroservice.Common\OrderMicroservice.Common.csproj" />
+
+  </ItemGroup>
+
+</Project>

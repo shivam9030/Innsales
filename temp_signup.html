@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#cbdbf5",
+              "on-secondary-fixed": "#0e1840",
+              "on-background": "#0b1c30",
+              "tertiary-container": "#872d00",
+              "surface-container-lowest": "#ffffff",
+              "surface-bright": "#f8f9ff",
+              "secondary-container": "#c3ccfe",
+              "on-tertiary-fixed": "#380d00",
+              "outline": "#757684",
+              "inverse-primary": "#b8c4ff",
+              "surface-container": "#e5eeff",
+              "surface-container-high": "#dce9ff",
+              "on-tertiary-fixed-variant": "#802a00",
+              "surface-container-highest": "#d3e4fe",
+              "on-primary-fixed-variant": "#173bab",
+              "surface": "#f8f9ff",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "on-secondary-fixed-variant": "#3b446e",
+              "primary": "#00288e",
+              "tertiary-fixed": "#ffdbce",
+              "inverse-on-surface": "#eaf1ff",
+              "primary-container": "#1e40af",
+              "outline-variant": "#c4c5d5",
+              "on-primary-fixed": "#001453",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb59a",
+              "surface-tint": "#3755c3",
+              "on-tertiary": "#ffffff",
+              "on-primary-container": "#a8b8ff",
+              "background": "#f8f9ff",
+              "secondary": "#525c87",
+              "on-surface": "#0b1c30",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#444653",
+              "surface-container-low": "#eff4ff",
+              "secondary-fixed-dim": "#bbc4f6",
+              "secondary-fixed": "#dde1ff",
+              "on-error-container": "#93000a",
+              "on-secondary-container": "#4c5680",
+              "primary-fixed-dim": "#b8c4ff",
+              "on-error": "#ffffff",
+              "tertiary": "#611e00",
+              "surface-variant": "#d3e4fe",
+              "primary-fixed": "#dde1ff",
+              "inverse-surface": "#213145",
+              "on-tertiary-container": "#ffa583"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bezier-transition {
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden">
+<main class="min-h-screen w-full flex">
+<!-- Left Side: The Artistic Anchor -->
+<section class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-primary-container items-center justify-center">
+<div class="absolute inset-0 z-0">
+<img alt="Artistic curation visual" class="w-full h-full object-cover mix-blend-overlay opacity-60" data-alt="Close-up of high-end ceramic sculptures and minimalist design objects on a velvet surface with soft dramatic studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5xq_AKfqsMPLA1JnwzN6f_bYHGGCcoKsceZ1s9vzR8MTwWd4NABLtrZGr5NUjdGE_No3dk27tmI0lXhxHSplzkxHsLh9nnxm4ypUrAB81beevXiCb1hK_KAny7klWgsZpxDaw1AENoMF4u6YxG7LnglzbE5-SFvDDbc43ckjNPBheslyNsjk_zlySM7TNrqHSq1MOpVkOhoBFgHNTHqvv4hY9idy-pnS_tTiBmg_sGSt_Jm-3Ydw9rxyb_H4lB3OeT7wJYsZIfV4"/>
+<div class="absolute inset-0 bg-gradient-to-tr from-primary via-primary/40 to-transparent"></div>
+</div>
+<div class="relative z-10 px-16 max-w-2xl">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-3">
+<span class="w-12 h-[2px] bg-on-primary-container"></span>
+<span class="font-headline font-bold text-on-primary-container tracking-widest text-sm uppercase">The Digital Atelier</span>
+</div>
+<h1 class="font-headline text-6xl font-extrabold text-white tracking-tighter leading-[0.9]">
+                        InnSales
+                    </h1>
+<p class="font-body text-2xl text-on-primary-container/90 font-light leading-relaxed">
+                        Artistry in every selection.
+                    </p>
+<div class="mt-8 flex gap-4">
+<div class="p-4 glass-panel rounded-xl flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="brush">brush</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-primary tracking-wide">CURATED</span>
+<span class="text-sm text-on-surface">Bespoke UI Patterns</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Absolute Bottom Ornament -->
+<div class="absolute bottom-12 left-16 flex items-center gap-4">
+<span class="text-on-primary-container/40 text-[10px] font-label tracking-[0.3em] uppercase">Est. 2024 Atelier Studio</span>
+</div>
+</section>
+<!-- Right Side: The Form Canvas -->
+<section class="w-full lg:w-1/2 bg-surface-container-low flex items-center justify-center p-8 md:p-16 lg:p-24 overflow-y-auto relative"><div class="absolute top-8 right-8 z-20">
+<button aria-label="Toggle Theme" class="p-3 bg-surface-container-lowest text-on-surface rounded-full border border-outline-variant/10 shadow-sm hover:shadow-md hover:scale-110 active:scale-95 bezier-transition flex items-center justify-center" id="theme-toggle">
+<span class="material-symbols-outlined block dark:hidden" data-icon="dark_mode">dark_mode</span>
+<span class="material-symbols-outlined hidden dark:block" data-icon="light_mode">light_mode</span>
+</button>
+</div>
+<div class="w-full max-w-md space-y-10">
+<!-- Brand Mobile Logo (Hidden on Desktop) -->
+<div class="lg:hidden mb-8">
+<h2 class="font-headline text-3xl font-extrabold text-primary tracking-tight">InnSales</h2>
+</div>
+<!-- Header -->
+<header class="space-y-2">
+<h3 class="font-headline text-3xl font-bold text-on-surface tracking-tight">Create your account</h3>
+<p class="text-on-surface-variant font-body">Join the elite community of digital curators.</p>
+</header>
+<!-- Signup Form -->
+<form class="space-y-6">
+<!-- Full Name -->
+<div class="space-y-2">
+<label class="block font-label text-sm font-semibold text-on-surface tracking-wide" for="full-name">Full Name</label>
+<div class="relative group">
+<input class="w-full px-5 py-4 bg-surface-container-lowest text-on-surface border-none rounded-lg focus:ring-2 focus:ring-primary-container/20 focus:outline-none bezier-transition placeholder:text-outline-variant" id="full-name" placeholder="Evelyn Thorne" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-2">
+<label class="block font-label text-sm font-semibold text-on-surface tracking-wide" for="email">Email Address</label>
+<div class="relative">
+<input class="w-full px-5 py-4 bg-surface-container-lowest text-on-surface border-none rounded-lg focus:ring-2 focus:ring-primary-container/20 focus:outline-none bezier-transition placeholder:text-outline-variant" id="email" placeholder="evelyn@atelier.com" type="email"/>
+</div>
+</div>
+<!-- Password -->
+<div class="space-y-2">
+<label class="block font-label text-sm font-semibold text-on-surface tracking-wide" for="password">Password</label>
+<div class="relative flex items-center">
+<input class="w-full px-5 py-4 bg-surface-container-lowest text-on-surface border-none rounded-lg focus:ring-2 focus:ring-primary-container/20 focus:outline-none bezier-transition placeholder:text-outline-variant" id="password" placeholder="••••••••••••" type="password"/>
+<button class="absolute right-4 text-outline hover:text-primary bezier-transition" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-3 py-2">
+<div class="flex items-center h-5">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20 bg-surface-container-lowest cursor-pointer" id="terms" type="checkbox"/>
+</div>
+<label class="text-sm text-on-surface-variant leading-tight" for="terms">
+                            I agree to the <a class="text-primary font-medium hover:underline" href="#">Terms of Service</a> and <a class="text-primary font-medium hover:underline" href="#">Privacy Policy</a>.
+                        </label>
+</div>
+<!-- CTA Button -->
+<div class="pt-4">
+<button class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-white font-headline font-bold rounded-lg shadow-xl shadow-primary/10 hover:scale-[1.02] active:scale-95 bezier-transition" type="submit">
+                            Create Account
+                        </button>
+</div>
+<!-- Login Link -->
+<p class="text-center text-sm text-on-surface-variant mt-8">
+                        Already a member? 
+                        <a class="text-primary font-bold hover:underline ml-1" href="#">Log In</a>
+</p>
+</form>
+<!-- Alternative Social Context (Subtle) -->
+<div class="relative py-4">
+<div aria-hidden="true" class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant/30"></div>
+</div>
+<div class="relative flex justify-center text-xs uppercase tracking-widest font-bold">
+<span class="bg-surface-container-low px-4 text-outline">Partner Integrations</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 hover:bg-white hover:shadow-md bezier-transition">
+<span class="text-sm font-semibold text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 hover:bg-white hover:shadow-md bezier-transition">
+<span class="text-sm font-semibold text-on-surface">Apple</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Suppressed Navigation Shell as per Transactional Flow Rules -->
+<script>
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  themeToggleBtn.addEventListener('click', function() {
+    document.documentElement.classList.toggle('dark');
+    // Persist theme choice if needed, but the prompt asked for the button to be added while keeping the screen light mode by default.
+  });
+</script></body></html>

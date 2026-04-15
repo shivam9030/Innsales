@@ -1,0 +1,45 @@
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <!-- Functions runtime uses only v3 or v4; v4 is correct for .NET 8/9 isolated -->
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Isolated worker model for net8/net9 -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.0.0" />
+
+    <!-- Worker SDK should be an Analyzer and only in the Function app -->
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.0" OutputItemType="Analyzer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Project references -->
+    <ProjectReference Include="..\Helper\Helper.csproj" />
+    <ProjectReference Include="..\..\InnSales.Services\InnSales.Services.csproj" />
+    <ProjectReference Include="..\..\InnSales.Common\InnSales.Common.csproj" />
+    <ProjectReference Include="..\..\InnSales.DataBase\InnSales.DataBase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

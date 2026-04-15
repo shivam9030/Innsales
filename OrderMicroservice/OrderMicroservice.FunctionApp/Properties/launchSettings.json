@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "OrderMicroservice_FunctionApp": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7114",
+      "launchBrowser": false
+    }
+  }
+}

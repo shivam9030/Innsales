@@ -1,0 +1,17 @@
+using InnSales.Common.Enums;
+
+namespace InnSales.Common.DTO
+{
+    public class PromotionUpdateDto
+{
+    public Guid PromotionId { get; set; } // Required for update
+    public string Name { get; set; } 
+    public PromotionStatus Status { get; set; }
+    public string? Description { get; set; }
+    public int Quantity { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public decimal MinimumOrderValue { get; set; }
+    public decimal PromotionValue { get; set; }
+}
+}

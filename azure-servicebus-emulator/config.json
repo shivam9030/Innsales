@@ -1,0 +1,58 @@
+
+{
+  "UserConfig": {
+    "Logging": {
+      "Type": "console"
+    },
+    "Namespaces": [
+      {
+        "Name": "sbemulatorns",
+        "Queues": [
+          {
+            "Name": "orders-queue",
+            "Properties": {
+              "LockDuration": "PT1M",
+              "MaxDeliveryCount": 10,
+              "DefaultMessageTimeToLive": "PT1H",
+              "RequiresSession": false,
+              "RequiresDuplicateDetection": false
+            }
+          }
+        ],
+        "Topics": [
+          {
+            "Name": "payments",
+            "Properties": {
+              "DefaultMessageTimeToLive": "PT1H",
+              "RequiresDuplicateDetection": false
+            },
+            "Subscriptions": [
+              {
+                "Name": "order-service",
+                "Properties": {
+                  "DefaultMessageTimeToLive": "PT1H",
+                  "LockDuration": "PT1M",
+                  "MaxDeliveryCount": 10,
+                  "RequiresSession": false
+                               }
+              }
+              ,
+              {
+              
+
+  "Name": "sales-events",
+  "Properties": {
+    "DefaultMessageTimeToLive": "PT1H",
+    "LockDuration": "PT1M",
+    "MaxDeliveryCount": 10,
+    "RequiresSession": false
+   }
+  }
+
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,537 @@
+
+openapi: 3.0.3
+info:
+  title: Sales Orders API
+  version: 1.0.0
+  description: |
+    REST API for retail orders ingestion and management across company web channel and external vendors.
+    Supports idempotent order creation, delivery label.
+servers:
+  - url: https://api.example.com/sales
+    description: Production
+  - url: https://sandbox.api.example.com/sales
+    description: Sandbox
+security:
+  - OAuth2: []
+  - ApiKeyHeader: []
+  - CorrelationId: []
+
+paths:
+  /v1/orders:
+    get:
+      summary: List orders
+      description: Filterable list of orders.
+      operationId: listOrders
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [RECEIVED, PENDING, CONFIRMED, FULFILLED, CANCELLED, RETURNED]
+        - name: customerId
+          in: query
+          schema:
+            type: string
+        - name: vendorId
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          description: ISO-8601 timestamp inclusive lower bound
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: ISO-8601 timestamp inclusive upper bound
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        '200':
+          description: A paged collection of orders
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      summary: Create an order (idempotent)
+      description: |
+        Creates an order. Use `Idempotency-Key` header to ensure safe retries.
+        Promo codes must be represented as `OrderItem` with `itemType = PROMO_CODE`.
+      operationId: createOrder
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/IfNoneMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+            examples:
+              basic:
+                $ref: '#/components/examples/OrderCreateExample'
+      responses:
+        '201':
+          description: Order created
+          headers:
+            Location:
+              schema:
+                type: string
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Duplicate or conflicting order
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /v1/orders/{orderId}:
+    get:
+      summary: Get order by id
+      operationId: getOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order
+          headers:
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      summary: Patch order (metadata, priorities, customer updates)
+      operationId: patchOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderPatch'
+      responses:
+        '200':
+          description: Updated order
+          headers:
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/orders/{orderId}/items:
+    post:
+      summary: Add an order item (product)
+      operationId: addOrderItem
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemCreate'
+      responses:
+        '201':
+          description: Item added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/orders/{orderId}/items/{itemId}:
+    patch:
+      summary: Update an order item (qty, price, discount)
+      operationId: patchOrderItem
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderItemPatch'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Remove an order item
+      operationId: deleteOrderItem
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/orders/{orderId}/cancel:
+    post:
+      summary: Cancel an order
+      operationId: cancelOrder
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/webhooks:
+    post:
+      summary: Register vendor webhook for events
+      operationId: registerWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookRegistration'
+      responses:
+        '201':
+          description: Registered
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token
+          scopes:
+            orders.read: Read orders
+            orders.write: Create/update orders
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
+    CorrelationId:
+      type: apiKey
+      in: header
+      name: X-Correlation-ID
+  parameters:
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: string
+    IfMatch:
+      name: If-Match
+      in: header
+      required: false
+      schema:
+        type: string
+      description: ETag for optimistic concurrency
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Set to '*' to avoid duplicate create when order exists
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Unique key per create/charge attempt to prevent duplicates
+  responses:
+    BadRequest:
+      description: Validation error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+  examples:
+    OrderCreateExample:
+      summary: Order create example
+      value:
+        source: WEB
+        channel: RETAIL
+        vendorId: 41
+        currency: INR
+        orderNumber: "W-2025-000123"
+        placedAt: "2025-12-17T12:05:00Z"
+        orderPriority: NORMAL
+        shippingPriority: EXPEDITED
+        customer:
+          customerId: "CUST-789"
+          email: "jane.doe@example.com"
+          phone: "+91-9000000000"
+          fullName: "Jane Doe"
+          billingAddress:
+            line1: "12-34/1, Road No. 5"
+            city: "Hyderabad"
+            state: "Telangana"
+            postalCode: "500081"
+            country: "IN"
+          shippingAddress:
+            line1: "Plot 21, Madhapur"
+            city: "Hyderabad"
+            state: "Telangana"
+            postalCode: "500081"
+            country: "IN"
+        items:
+          - itemId: "SKU-IPH15"
+            itemType: PRODUCT
+            sku: "IPH15-BLK-128"
+            name: "iPhone 15 Black 128GB"
+            quantity: 1
+        shipping:
+          method: "BLUEDART_EXPRESS"
+          promisedDate: "2025-12-19"
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    OrderList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+    OrderCreate:
+      type: object
+      required: [source, channel, vendorId, placedAt, customer, items]
+      properties:
+        source:
+          type: string
+          enum: [WEB, VENDOR]
+        channel:
+          type: string
+          description: Logical sales channel
+        vendorId:
+          type: number
+        orderNumber:
+          type: string
+          description: order number displayed to the customer
+        placedAt:
+          type: string
+          format: date-time
+        orderPriority:
+          type: string
+          enum: [LOW, NORMAL, HIGH, URGENT]
+        shippingPriority:
+          type: string
+          enum: [ECONOMY, STANDARD, EXPEDITED, OVERNIGHT]
+        customer:
+          $ref: '#/components/schemas/Customer'
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        shipping:
+          $ref: '#/components/schemas/ShippingDetails'
+    OrderPatch:
+      type: object
+      properties:
+        orderPriority:
+          type: string
+          enum: [LOW, NORMAL, HIGH, URGENT]
+        shippingPriority:
+          type: string
+          enum: [ECONOMY, STANDARD, EXPEDITED, OVERNIGHT]
+        customer:
+          $ref: '#/components/schemas/Customer'
+        shipping:
+          $ref: '#/components/schemas/ShippingDetails'
+    Order:
+      allOf:
+        - $ref: '#/components/schemas/OrderCreate'
+        - type: object
+          required: [orderId, status]
+          properties:
+            orderId:
+              type: string
+            status:
+              type: string
+              enum: [PENDING, CONFIRMED, FULFILLED, CANCELLED, RETURNED]
+            etag:
+              type: string
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        fullName:
+          type: string
+        billingAddress:
+          $ref: '#/components/schemas/Address'
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+    Address:
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+          minLength: 2
+          maxLength: 2
+    OrderItem:
+      type: object
+      required: [itemType, sku, name, quantity]
+      properties:
+        itemType:
+          type: string
+          enum: [PRODUCT, SHIPPING, FEE]
+        sku:
+          type: string
+        code:
+          type: string
+          description: Promo code when itemType=PROMO_CODE
+        name:
+          type: string
+        quantity:
+          type: number
+          format: double
+          minimum: 1
+    OrderItemCreate:
+      $ref: '#/components/schemas/OrderItem'
+    OrderItemPatch:
+      type: object
+      properties:
+        quantity:
+          type: number
+          format: double
+    ShippingDetails:
+      type: object
+      properties:
+        method:
+          type: string
+        promisedDate:
+          type: string
+          format: date
+        label:
+          type: string
+          format: uri
+          description: Vendors can provide their own shipping label
+        filename:
+          type: string
+    WebhookRegistration:
+      type: object
+      required: [url, events]
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: [order.created, order.updated, order.cancelled, order.shipped]
+        secret:
+          type: string

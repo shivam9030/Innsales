@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+<ItemGroup>
+  
+    <!-- <ProjectReference Include="..\OrderMicroservice.DataBase\OrderMicroservice.DataBase.csproj" /> -->
+    <ProjectReference Include="..\OrderMicroservice.Domain\OrderMicroservice.Domain.csproj" />
+    <ProjectReference Include="..\OrderMicroservice.Common\OrderMicroservice.Common.csproj" />
+  </ItemGroup>
+<ItemGroup>
+  <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
+  <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
+  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.1" />
+</ItemGroup>
+</Project>

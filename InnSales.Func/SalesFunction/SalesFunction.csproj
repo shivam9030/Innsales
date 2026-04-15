@@ -1,0 +1,67 @@
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Azure Functions isolated worker -->
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.0" OutputItemType="Analyzer" PrivateAssets="all" />
+
+    <!-- DI & Configuration -->
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+
+    <!-- EF Core: align with InnSales.DataBase requirements -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
+
+    <!-- JsonObjectSerializer support -->
+    <PackageReference Include="Azure.Core" Version="1.47.3" />
+
+    <!-- JWT parsing inside functions (claims reading) -->
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
+  </ItemGroup>
+  
+<ItemGroup>
+  <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+</ItemGroup>
+
+
+  <ItemGroup>
+    <!-- Project references (adjust paths to your repo layout) -->
+    <ProjectReference Include="..\Helper\Helper.csproj" />
+    <ProjectReference Include="..\..\InnSales.Domain\InnSales.Domain.csproj" />
+    <ProjectReference Include="..\..\InnSales.Common\InnSales.Common.csproj" />
+    <ProjectReference Include="..\..\InnSales.DataBase\InnSales.DataBase.csproj" />
+    <ProjectReference Include="..\..\InnSales.Services\InnSales.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Settings files -->
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- Optional build props -->
+  <PropertyGroup>
+    <Deterministic>true</Deterministic>
+    <TieredCompilation>true</TieredCompilation>
+    <ReadyToRun>false</ReadyToRun>
+  </PropertyGroup>
+
+</Project>

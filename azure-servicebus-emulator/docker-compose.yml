@@ -1,0 +1,28 @@
+ 
+version: "3.8"
+services:
+  sbemulator:
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+    container_name: sb-emulator
+    ports:
+      - "5672:5672"   # AMQP (client traffic)
+      - "8080:8080"   # emulator health/management
+    volumes:
+      - ./config.json:/ServiceBus_Emulator/ConfigFiles/Config.json:ro
+    environment:
+      ACCEPT_EULA: "Y"
+      SQL_SERVER: "sb-sql"
+      MSSQL_SA_PASSWORD: "Welcome@1234"
+    depends_on:
+      - sqledge
+ 
+  sqledge:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: sb-sql
+    environment:
+      - ACCEPT_EULA=1
+      - MSSQL_SA_PASSWORD=Welcome@1234
+    ports:
+      - "1433:1433"
+ 
+ 
