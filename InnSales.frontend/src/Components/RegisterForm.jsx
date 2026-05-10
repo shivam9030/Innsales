@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { registerUser } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-export default function RegisterForm() {
+const RegisterForm = memo(function RegisterForm() {
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -12,21 +13,23 @@ export default function RegisterForm() {
   });
 
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = useCallback((e) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     try {
       await registerUser(form);
-      navigate('/dashboard'); //  Redirect to dashboard
+      await refreshUser();
+      navigate('/dashboard'); 
     } catch (err) {
       alert('Registration failed.');
       console.error(err.response?.data);
     }
-  };
+  }, [form, refreshUser, navigate]);
 
   return (
     <main className="min-h-screen w-full flex">
@@ -211,4 +214,6 @@ export default function RegisterForm() {
       </section>
     </main>
   );
-}
+});
+
+export default RegisterForm;

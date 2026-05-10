@@ -1,29 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { getCurrentUser } from '../services/authService';
+import React, { useState, memo } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
-export default function Navbar() {
-  const [username, setUsername] = useState('');
+const Navbar = memo(function Navbar() {
+  const { user, logout } = useAuth();
+  const { cartCount } = useCart();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await getCurrentUser();
-        setUsername(res.data.displayName);
-      } catch (err) {
-        console.error('Failed to fetch user:', err.response?.data);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl shadow-sm transition-all duration-300">
@@ -48,7 +31,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 hover:scale-105 transition-transform duration-300 text-primary"
               >
                 <span className="material-symbols-outlined">person</span>
-                <span className="hidden sm:inline-block font-label text-sm font-semibold">{username || 'User'}</span>
+                <span className="hidden sm:inline-block font-label text-sm font-semibold">{user?.displayName || 'User'}</span>
               </button>
               
               {isDropdownOpen && (
@@ -57,7 +40,7 @@ export default function Navbar() {
                     Account
                   </span>
                   <button 
-                    onClick={handleLogout} 
+                    onClick={logout} 
                     className="w-full text-left px-4 py-2 text-sm text-error hover:bg-error/10 font-label transition-colors"
                   >
                     Logout
@@ -66,8 +49,13 @@ export default function Navbar() {
               )}
             </div>
 
-            <Link to="/basket" className="hover:scale-105 transition-transform duration-300 text-primary flex items-center">
+            <Link to="/basket" className="hover:scale-105 transition-transform duration-300 text-primary flex items-center relative">
               <span className="material-symbols-outlined">shopping_cart</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
             
           </div>
@@ -75,4 +63,6 @@ export default function Navbar() {
       </div>
     </nav>
   );
-}
+});
+
+export default Navbar;
