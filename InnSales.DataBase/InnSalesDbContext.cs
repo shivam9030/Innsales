@@ -33,7 +33,6 @@ namespace InnSales.DataBase
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.ToTable("users");
-                entity.Property(u => u.AccessFailedCount).HasColumnType("smallint");
                 entity.Property(u => u.EmailConfirmed).HasConversion<short>();
                 entity.Property(u => u.PhoneNumberConfirmed).HasConversion<short>();
                 entity.Property(u => u.TwoFactorEnabled).HasConversion<short>();
@@ -70,8 +69,7 @@ namespace InnSales.DataBase
                     .HasColumnType("text");
 
                 entity.Property(o => o.PaymentStatus)
-                    .HasConversion<int>()
-                    .HasColumnType("smallint");
+                    .HasConversion<int>();
 
                 entity.Property(o => o.Tax)
                     .HasPrecision(18, 2);
@@ -101,8 +99,7 @@ namespace InnSales.DataBase
         .OnDelete(DeleteBehavior.SetNull);
 
 
-                entity.Property(oi => oi.Quantity)
-                    .HasColumnType("smallint");
+
 
                 entity.Property(oi => oi.UnitPrice)
                     .HasPrecision(18, 2);
@@ -116,7 +113,6 @@ namespace InnSales.DataBase
 
             modelBuilder.Entity<BasketItem>(entity =>
             {
-                entity.Property(b => b.Quantity).HasColumnType("smallint");
             });
 
             // Product Configuration
@@ -125,8 +121,6 @@ namespace InnSales.DataBase
                 entity.Property(p => p.Name).HasColumnName("Name");
                 entity.Property(p => p.Price)
                     .HasPrecision(18, 2);
-                entity.Property(p => p.StockQuantity)
-                    .HasColumnType("smallint");
                 entity.Property(p => p.IsDeleted).HasConversion<short>();
                 entity.Property(p => p.IsPromoProduct).HasConversion<short>();
             });
@@ -182,8 +176,6 @@ namespace InnSales.DataBase
                 entity.HasKey(pc => pc.PromoCodeId);
                 entity.Property(pc => pc.Code).HasMaxLength(50).IsRequired();
                 entity.HasIndex(pc => pc.Code).IsUnique();
-                entity.Property(pc => pc.MaxUsageLimit).HasColumnType("smallint");
-                entity.Property(pc => pc.UsageCount).HasColumnType("smallint");
                 entity.Property(pc => pc.isUniqueCode).HasConversion<short>();
                 entity.HasOne(pc => pc.Promotion)
                       .WithMany(p => p.PromoCodes)
