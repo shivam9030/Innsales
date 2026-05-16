@@ -12,13 +12,13 @@ COPY InnSales.Domain/*.csproj ./InnSales.Domain/
 COPY InnSales.Services/*.csproj ./InnSales.Services/
 
 # Restore
-RUN dotnet restore
+RUN dotnet restore innsales.api/innsales.api.csproj
 
 # Copy full source
 COPY . .
 
 # Publish API
-RUN dotnet publish InnSales.Api/InnSales.Api.csproj -c Release -o /app/publish
+RUN dotnet publish innsales.api/innsales.api.csproj -c Release -o /app/publish
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
