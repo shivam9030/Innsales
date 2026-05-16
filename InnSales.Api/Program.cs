@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add DbContext
 builder.Services.AddDbContext<InnSalesDbContext>(options =>
-    options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PPSProj;Trusted_Connection=True;TrustServerCertificate=True;"));
+    options.UseSqlServer("Server=sqlserver,1433;Database=InnSalesDB;User Id=sa;Password=1shivam2;TrustServerCertificate=True"));
 
 
 // Add Identity

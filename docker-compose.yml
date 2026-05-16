@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: innsales_sql
+    environment:
+      SA_PASSWORD: "1shivam2"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  api:
+    build: .
+    container_name: innsales_api
+    ports:
+      - "8080:80"
+    depends_on:
+      - sqlserver
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=InnSalesDB;User Id=sa;Password=1shivam2;TrustServerCertificate=True;"
+
+volumes:
+  sql_data:

@@ -10,8 +10,8 @@ public class InnSalesDbContextFactory : IDesignTimeDbContextFactory<InnSalesDbCo
         // optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PPSProj;Trusted_Connection=True;TrustServerCertificate=True;");
  var optionsBuilder = new DbContextOptionsBuilder<InnSalesDbContext>();
     optionsBuilder.UseSqlServer(
-    "Server=localhost\\SQLEXPRESS;Database=PPSProj;Trusted_Connection=True;TrustServerCertificate=True;"
-);
+    "Server=sqlserver,1433;Database=InnSalesDB;User Id=sa;Password=1shivam2;TrustServerCertificate=True");
+
         return new InnSalesDbContext(optionsBuilder.Options);
     }
 }

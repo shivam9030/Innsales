@@ -1,33 +1,31 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
-WORKDIR /app
- 
-# Copy solution and project files with correct casing
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy solution + projects
 COPY *.sln ./
-COPY MyApp/*.csproj ./MyApp/
-COPY Pps.Api/*.csproj ./Pps.Api/
-COPY pps.DataBase/*.csproj ./pps.DataBase/
-COPY pps.Domain/*.csproj ./pps.Domain/
-COPY pps.DTO/*.csproj ./pps.DTO/
-COPY Pps.Services/*.csproj ./Pps.Services/
-COPY pps.Tests/*.csproj ./pps.Tests/
- 
-# Restore dependencies
+
+COPY InnSales.Api/*.csproj ./InnSales.Api/
+COPY InnSales.Common/*.csproj ./InnSales.Common/
+COPY InnSales.DataBase/*.csproj ./InnSales.DataBase/
+COPY InnSales.Domain/*.csproj ./InnSales.Domain/
+COPY InnSales.Services/*.csproj ./InnSales.Services/
+
+# Restore
 RUN dotnet restore
- 
-# Copy everything else
-COPY . ./
- 
-#  Debug: List contents of /app before publishing
-RUN echo "Listing contents of /app:" && ls -R /app
- 
-# Publish the Web API project
-RUN dotnet publish Pps.Api/Pps.Api.csproj -c Release -o /app/out
- 
-# Build runtime image
+
+# Copy full source
+COPY . .
+
+# Publish API
+RUN dotnet publish InnSales.Api/InnSales.Api.csproj -c Release -o /app/publish
+
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
-COPY --from=build-env /app/out .
- 
+
+COPY --from=build /app/publish .
+
 EXPOSE 80
-# Start the Web API
-ENTRYPOINT ["dotnet", "Pps.Api.dll"]
+
+ENTRYPOINT ["dotnet", "InnSales.Api.dll"]
