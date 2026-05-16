@@ -27,9 +27,15 @@ namespace InnSales.Api.Controllers
             return order == null ? NotFound() : Ok(order);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllOrders()
-        {  var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        {  
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
             var orders = await _orderService.GetAllOrdersAsync(userId);
             return Ok(orders);
         }
