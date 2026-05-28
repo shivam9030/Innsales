@@ -37,11 +37,18 @@ const Navbar = memo(function Navbar() {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-lg shadow-lg py-2 border border-outline-variant/20">
                   <span className="block px-4 py-2 text-xs text-on-surface-variant uppercase tracking-wider font-bold border-b border-outline-variant/10 mb-1">
-                    Account
+                    Settings
                   </span>
+                  <Link 
+                    to="/account" 
+                    className="block px-4 py-2 text-sm text-on-surface hover:bg-transparent hover:text-primary font-label transition-colors"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Account
+                  </Link>
                   <button 
-                    onClick={logout} 
-                    className="w-full text-left px-4 py-2 text-sm text-error hover:bg-error/10 font-label transition-colors"
+                    onClick={() => { logout(); setIsDropdownOpen(false); }} 
+                    className="w-full text-left px-4 py-2 text-sm text-error hover:bg-transparent hover:text-error/80 font-label transition-colors"
                   >
                     Logout
                   </button>

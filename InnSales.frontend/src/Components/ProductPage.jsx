@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, memo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import Navbar from './Navbar';
 import { useCart } from '../context/CartContext';
 
@@ -20,7 +20,7 @@ const ProductPage = memo(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/v1/product/all`); 
+        const res = await axiosClient.get('/products');
         const found = res.data?.find(p => p.id === parseInt(productId));
         
         if (found) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import Navbar from './Navbar';
 import OrderSummaryWidget from './OrderSummaryWidget';
 
@@ -14,11 +14,7 @@ const CheckoutPage = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/v1/orders/${orderId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const res = await axiosClient.get(`/orders/${orderId}`);
         setOrder(res.data);
         if (res.data.paymentToken) {
           localStorage.setItem('paymentToken', res.data.paymentToken);

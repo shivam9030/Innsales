@@ -64,12 +64,15 @@ function AppRoutes() {
   );
 }
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
           <AppRoutes />
+          <Toaster position="bottom-center" />
         </Router>
       </CartProvider>
     </AuthProvider>

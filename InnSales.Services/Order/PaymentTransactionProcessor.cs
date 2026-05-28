@@ -18,9 +18,15 @@ namespace InnSales.Services
         {
             _services = services;
 
-            var cs    = config["ServiceBus:ConnectionString"]!;
-            var topic = config["ServiceBus:PaymentTopic"]!;
-            var sub   = config["ServiceBus:OrderSubscription"]!;
+            var cs    = config["ServiceBus:ConnectionString"];
+            var topic = config["ServiceBus:PaymentTopic"];
+            var sub   = config["ServiceBus:OrderSubscription"];
+
+            if (string.IsNullOrWhiteSpace(cs) || cs.Contains("UseDevelopmentEmulator"))
+            {
+                Console.WriteLine("[SB-PROCESSOR] Service Bus connection string is invalid or uses emulator. Disabling processor.");
+                return;
+            }
 
             var client = new ServiceBusClient(cs);
 
@@ -35,7 +41,10 @@ namespace InnSales.Services
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
-            => _processor.StartProcessingAsync(stoppingToken);
+        {
+            if (_processor == null) return Task.CompletedTask;
+            return _processor.StartProcessingAsync(stoppingToken);
+        }
 
         private async Task OnMessageAsync(ProcessMessageEventArgs args)
         {

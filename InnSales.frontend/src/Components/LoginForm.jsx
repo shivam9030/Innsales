@@ -2,6 +2,7 @@ import React, { useState, useCallback, memo } from 'react';
 import { loginUser } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const LoginForm = memo(function LoginForm() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -19,9 +20,10 @@ const LoginForm = memo(function LoginForm() {
       const token = res.data.token;
       console.log('Login successful, token:', token);
       login(token);
+      toast.success('Successfully logged in!');
       navigate('/dashboard'); 
     } catch (err) {
-      alert('Login failed.');
+      toast.error(err.response?.data?.message || err.response?.data || 'Login failed. Please check your credentials.');
       console.error(err.response?.data);
     }
   }, [form, login, navigate]);

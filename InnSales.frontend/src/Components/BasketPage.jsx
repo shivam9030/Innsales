@@ -10,7 +10,6 @@ import { useCart } from '../context/CartContext';
 const BasketPage = memo(function BasketPage() {
   const { cartItems, loading, updateQuantity, removeItem, fetchCart, subtotal } = useCart();
   const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,7 +43,6 @@ const BasketPage = memo(function BasketPage() {
       }
       const res = await applyPromoCode(promoCode); 
       if (res.data.success) {
-        setAppliedPromo({ discount: res.data.discount });
         alert(`Promo applied! Discount: ₹${res.data.discount}`);
         await fetchCart(); 
       } else {

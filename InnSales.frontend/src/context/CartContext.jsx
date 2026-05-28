@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
-import { getBasketItems, addToBasket, updateBasketItem, removeBasketItem, checkoutBasket } from '../services/basketService';
+import { getBasketItems, addToBasket, updateBasketItem, removeBasketItem } from '../services/basketService';
 import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
@@ -88,4 +88,5 @@ export const CartProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCart = () => useContext(CartContext);

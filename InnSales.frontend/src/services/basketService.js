@@ -1,20 +1,9 @@
-
-
-import axios from 'axios';
-
-const API_BASE = 'http://localhost:5000/api/v1/basket';
-
-const authHeader = () => ({
-  Authorization: `Bearer ${localStorage.getItem('token')}`,
-  'Content-Type': 'application/json',
-});
+import axiosClient from '../api/axiosClient';
 
 //  1. Get all basket items for current user
 export const getBasketItems = async () => {
   try {
-    const response = await axios.get(`${API_BASE}`, {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.get('/basket');
     return response;
   } catch (error) {
     console.error('Error fetching basket items:', error.response?.data || error.message);
@@ -27,9 +16,7 @@ export const addToBasket = async (productId, quantity) => {
   const dto = { productId, quantity };
 
   try {
-    const response = await axios.post(`${API_BASE}/add`, dto, {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.post('/basket/add', dto);
     return response;
   } catch (error) {
     console.error('Error adding to basket:', error.response?.data || error.message);
@@ -40,9 +27,7 @@ export const addToBasket = async (productId, quantity) => {
 //  3. Update quantity of a basket item
 export const updateBasketItem = async (id, quantity) => {
   try {
-    const response = await axios.put(`${API_BASE}/update/${id}`, quantity, {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.put(`/basket/update/${id}`, quantity);
     return response;
   } catch (error) {
     console.error('Error updating basket item:', error.response?.data || error.message);
@@ -53,9 +38,7 @@ export const updateBasketItem = async (id, quantity) => {
 // 4. Remove item from basket
 export const removeBasketItem = async (id) => {
   try {
-    const response = await axios.delete(`${API_BASE}/remove/${id}`, {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.delete(`/basket/remove/${id}`);
     return response;
   } catch (error) {
     console.error('Error removing basket item:', error.response?.data || error.message);
@@ -66,9 +49,7 @@ export const removeBasketItem = async (id) => {
 // 5. Checkout basket
 export const checkoutBasket = async () => {
   try {
-    const response = await axios.post(`${API_BASE}/checkout`, null, {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.post('/basket/checkout', null);
     return response;
   } catch (error) {
     console.error('Error during checkout:', error.response?.data || error.message);
@@ -79,15 +60,9 @@ export const checkoutBasket = async () => {
 // 6. Apply promo code
 export const applyPromoCode = async (promoCode) => {
   try {
-    const response = await axios.post(
-      `${API_BASE}/apply-promo`,
-      JSON.stringify(promoCode), // Send raw string
-      {
-        headers: {
-          ...authHeader(),
-          'Content-Type': 'application/json',
-        },
-      }
+    const response = await axiosClient.post(
+      '/basket/apply-promo',
+      JSON.stringify(promoCode)
     );
     return response;
   } catch (error) {

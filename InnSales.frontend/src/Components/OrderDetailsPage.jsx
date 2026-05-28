@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import Navbar from './Navbar';
+import toast from 'react-hot-toast';
 
 export default function OrderDetailsPage() {
   const { orderId } = useParams();
@@ -30,29 +31,14 @@ export default function OrderDetailsPage() {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('No access token found. Please login again.');
-          navigate('/login');
-          return;
-        }
-
-        const res = await axios.get(`http://localhost:5000/api/v1/orders/${orderId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          withCredentials: false,
-        });
-
+        const res = await axiosClient.get(`/orders/${orderId}`);
         setOrder(res.data);
       } catch (err) {
         const message = err.response?.data?.message || err.response?.data || err.message || 'Could not load order details.';
         setError(typeof message === 'string' ? message : 'Could not load order details.');
         console.error('Failed to fetch order:', err.response?.data || err.message);
 
-        if (err.response?.status === 401) navigate('/login');
-        if (err.response?.status === 403) alert('Access denied.');
+        if (err.response?.status === 403) toast.error('Access denied.');
       } finally {
         setLoading(false);
       }
@@ -71,33 +57,11 @@ export default function OrderDetailsPage() {
     if (!confirmCancel || !order?.id) return;
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('No access token found. Please login again.');
-        navigate('/login');
-        return;
-      }
-
-      await axios.post(
-        `http://localhost:5000/api/v1/orders/cancel/${order.id}`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      alert('Order cancelled successfully.');
+      await axiosClient.post(`/orders/cancel/${order.id}`, null);
+      toast.success('Order cancelled successfully.');
       navigate('/orders');
     } catch (err) {
-      if (err.response?.status === 401) {
-        alert('Session expired. Please login again.');
-        navigate('/login');
-      } else {
-        alert(err.response?.data?.message || 'Could not cancel the order.');
-      }
+      toast.error(err.response?.data?.message || 'Could not cancel the order.');
     }
   };
 

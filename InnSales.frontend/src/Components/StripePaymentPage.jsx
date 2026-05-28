@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import StripePaymentForm from './StripePaymentForm';
 import Navbar from './Navbar';
 import OrderSummaryWidget from './OrderSummaryWidget';
@@ -19,11 +19,7 @@ const StripePaymentPage = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/v1/orders/${orderId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const res = await axiosClient.get(`/orders/${orderId}`);
         setOrder(res.data);
       } catch (err) {
         setError('Failed to load order');

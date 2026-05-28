@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllCategories } from '../services/categoryService';
 import { getProductsByCategory } from '../services/productService';
