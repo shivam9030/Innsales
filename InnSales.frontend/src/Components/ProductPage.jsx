@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import Navbar from './Navbar';
-import { addToBasket } from '../services/basketService';
+import { useCart } from '../context/CartContext';
 
-const ProductPage = () => {
+const ProductPage = memo(() => {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const { addItem } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,15 +17,10 @@ const ProductPage = () => {
   const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
-    // In a real scenario we'd have a getProductById service, 
-    // here we just use axios to get it or mock if the endpoint isn't fully ready.
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        // Note: Replace with actual product fetch endpoint if different. 
-        // For demonstration, we assume we might get all products or there's a specific endpoint.
-        const res = await axios.get(`http://localhost:5000/api/v1/product/all`); 
-        // fallback to finding the product from the list, or calling single endpoint
+        const res = await axiosClient.get('/products');
         const found = res.data?.find(p => p.id === parseInt(productId));
         
         if (found) {
@@ -43,19 +39,22 @@ const ProductPage = () => {
     fetchProduct();
   }, [productId]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = useCallback(async () => {
     try {
       setAddingToCart(true);
-      await addToBasket(product.id, 1);
-      alert(`${product.name} added to your basket!`);
-      // User can continue shopping or navigate
+      const result = await addItem(product.id, 1);
+      if (result.success) {
+        alert(`${product.name} added to your basket!`);
+      } else {
+        alert('Could not add item to basket.');
+      }
     } catch (err) {
       console.error(err);
       alert('Could not add item to basket.');
     } finally {
       setAddingToCart(false);
     }
-  };
+  }, [addItem, product]);
 
   if (loading) {
     return (
@@ -219,16 +218,8 @@ const ProductPage = () => {
           <p className="text-on-surface-variant font-body text-sm">© 2024 InnSales Atelier. All rights reserved.</p>
         </div>
       </footer>
-
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className={`fixed top-24 right-8 z-[100] p-4 rounded-xl shadow-xl border min-w-[300px] flex items-center space-x-3 transition-all duration-300 ease-out transform translate-y-0 opacity-100 ${toastMessage.isError ? 'bg-error-container text-error border-error/50' : 'bg-surface-container-highest text-primary border-primary/20'}`}>
-          <span className="material-symbols-outlined">{toastMessage.isError ? 'error' : 'check_circle'}</span>
-          <span className="font-bold text-sm font-body tracking-wide">{toastMessage.message}</span>
-        </div>
-      )}
     </div>
   );
-};
+});
 
 export default ProductPage;

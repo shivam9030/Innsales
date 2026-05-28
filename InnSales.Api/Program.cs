@@ -17,10 +17,25 @@ using InnSales.Services.Authentication.Webhooks;
 using InnSales.Api;
 var builder = WebApplication.CreateBuilder(args);
 
+// Enable legacy timestamp behavior for PostgreSQL
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Add DbContext
 builder.Services.AddDbContext<InnSalesDbContext>(options =>
-    options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=PPSProj;Trusted_Connection=True;TrustServerCertificate=True;"));
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        o => 
+        {
+            o.MigrationsAssembly("InnSales.DataBase");
+            o.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorCodesToAdd: null);
+            o.CommandTimeout(60); // Increase timeout to prevent reading stream errors
+        })
+    .UseLowerCaseNamingConvention();
+});
 
 
 // Add Identity

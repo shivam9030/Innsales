@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import Navbar from './Navbar';
+import toast from 'react-hot-toast';
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -31,29 +32,15 @@ const OrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('No access token found. Please login again.');
-          navigate('/login');
-          return;
-        }
-       const res = await axios.get('http://localhost:5000/api/v1/orders', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
+        const res = await axiosClient.get('/orders');
         setOrders(res.data || []);
       } catch (err) {
         const message = err.response?.data?.message || err.response?.data || err.message;
         setError(typeof message === 'string' ? message : 'Failed to fetch orders');
         console.error('Failed to fetch orders:', err.response?.data || err.message);
 
-        if (err.response?.status === 401) {
-          navigate('/login');
-        } else if (err.response?.status === 403) {
-          alert('Access denied. You might need Employee role for this page.');
+        if (err.response?.status === 403) {
+          toast.error('Access denied. You might need Employee role for this page.');
         }
       } finally {
         setLoading(false);

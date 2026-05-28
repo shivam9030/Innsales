@@ -1,4 +1,7 @@
-public interface IOrderEventPublisher
+namespace InnSales.Services
 {
-    Task PublishOrderUpdatedAsync(Guid orderId, string customerId, string status);
+    public interface IOrderEventPublisher
+    {
+        Task PublishOrderUpdatedAsync(Guid orderId, string customerId, string status);
+    }
 }

@@ -30,13 +30,28 @@ namespace InnSales.DataBase
             base.OnModelCreating(modelBuilder);
 
             // Identity Table Mappings
-            modelBuilder.Entity<ApplicationUser>().ToTable("Users");
-            modelBuilder.Entity<IdentityRole>().ToTable("Roles");
-            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
-            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
-            modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
-            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
-            modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.ToTable("users");
+                entity.Property(u => u.EmailConfirmed).HasConversion<short>();
+                entity.Property(u => u.PhoneNumberConfirmed).HasConversion<short>();
+                entity.Property(u => u.TwoFactorEnabled).HasConversion<short>();
+                entity.Property(u => u.LockoutEnabled).HasConversion<short>();
+            });
+            modelBuilder.Entity<IdentityRole>(entity =>
+            {
+                entity.ToTable("roles");
+                entity.Property(r => r.Name).HasColumnName("Name");
+            });
+            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("userroles");
+            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("userclaims");
+            modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("userlogins");
+            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("roleclaims");
+            modelBuilder.Entity<IdentityUserToken<string>>(entity =>
+            {
+                entity.ToTable("usertokens");
+                entity.Property(t => t.Name).HasColumnName("Name");
+            });
 
             // Order Configuration
             modelBuilder.Entity<Order>(entity =>
@@ -50,7 +65,8 @@ namespace InnSales.DataBase
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(o => o.OrderStatus)
-                    .HasConversion<string>();
+                    .HasConversion<string>()
+                    .HasColumnType("text");
 
                 entity.Property(o => o.PaymentStatus)
                     .HasConversion<int>();
@@ -83,6 +99,8 @@ namespace InnSales.DataBase
         .OnDelete(DeleteBehavior.SetNull);
 
 
+
+
                 entity.Property(oi => oi.UnitPrice)
                     .HasPrecision(18, 2);
 
@@ -93,10 +111,26 @@ namespace InnSales.DataBase
     // .HasForeignKey(b => b.PromoCodeId)
     // .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<BasketItem>(entity =>
+            {
+            });
+
             // Product Configuration
-            modelBuilder.Entity<Product>()
-                .Property(p => p.Price)
-                .HasPrecision(18, 2);
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.Property(p => p.Name).HasColumnName("Name");
+                entity.Property(p => p.Price)
+                    .HasPrecision(18, 2);
+                entity.Property(p => p.IsDeleted).HasConversion<short>();
+                entity.Property(p => p.IsPromoProduct).HasConversion<short>();
+            });
+
+            // Category Configuration
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.Property(c => c.Name).HasColumnName("Name");
+                entity.Property(c => c.IsDeleted).HasConversion<short>();
+            });
 
             // Payment Configuration
             modelBuilder.Entity<Payment>(entity =>
@@ -124,10 +158,11 @@ namespace InnSales.DataBase
             // Promotion Table Config
             modelBuilder.Entity<Promotion>(entity =>
             {
-                entity.ToTable("InnSales_Promotion");
+                entity.ToTable("innsales_promotion");
                 entity.HasKey(p => p.PromotionId);
-                entity.Property(p => p.Name).HasMaxLength(100).IsRequired();
+                entity.Property(p => p.Name).HasColumnName("Name").HasMaxLength(100).IsRequired();
                 entity.Property(p => p.Description).HasColumnType("TEXT");
+                entity.Property(p => p.Quantity).HasColumnType("smallint");
                 entity.Property(p => p.minimumOrderValue).HasColumnType("decimal(10,2)");
                 entity.Property(p => p.PromotionValue).HasColumnType("decimal(10,2)");
                 entity.Property(p => p.DiscountType).HasConversion<string>(); // Store enum as string
@@ -137,10 +172,11 @@ namespace InnSales.DataBase
             // PromoCode Table Config
             modelBuilder.Entity<PromoCode>(entity =>
             {
-                entity.ToTable("InnSales_Promocode");
+                entity.ToTable("innsales_promocode");
                 entity.HasKey(pc => pc.PromoCodeId);
                 entity.Property(pc => pc.Code).HasMaxLength(50).IsRequired();
                 entity.HasIndex(pc => pc.Code).IsUnique();
+                entity.Property(pc => pc.isUniqueCode).HasConversion<short>();
                 entity.HasOne(pc => pc.Promotion)
                       .WithMany(p => p.PromoCodes)
                       .HasForeignKey(pc => pc.PromotionId)

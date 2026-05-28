@@ -1,28 +1,32 @@
-import { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { loginUser } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
-export default function LoginForm() {
+const LoginForm = memo(function LoginForm() {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = useCallback((e) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     try {
       const res = await loginUser(form);
       const token = res.data.token;
       console.log('Login successful, token:', token);
-      localStorage.setItem('token', token);
-      navigate('/dashboard'); // Redirect to dashboard
+      login(token);
+      toast.success('Successfully logged in!');
+      navigate('/dashboard'); 
     } catch (err) {
-      alert('Login failed.');
+      toast.error(err.response?.data?.message || err.response?.data || 'Login failed. Please check your credentials.');
       console.error(err.response?.data);
     }
-  };
+  }, [form, login, navigate]);
 
   return (
     <main className="min-h-screen flex flex-col md:flex-row">
@@ -150,14 +154,8 @@ export default function LoginForm() {
           </div>
         </div>
       </section>
-
-      <footer className="fixed bottom-0 right-0 p-8 hidden md:block pointer-events-none">
-        <div className="flex gap-6 pointer-events-auto">
-          <a href="#" className="text-xs font-label text-outline hover:text-primary transition-all duration-300">Privacy Policy</a>
-          <a href="#" className="text-xs font-label text-outline hover:text-primary transition-all duration-300">Terms of Service</a>
-          <a href="#" className="text-xs font-label text-outline hover:text-primary transition-all duration-300">Support</a>
-        </div>
-      </footer>
     </main>
   );
-}
+});
+
+export default LoginForm;

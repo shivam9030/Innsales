@@ -1,24 +1,25 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllCategories } from '../services/categoryService';
 import { getProductsByCategory } from '../services/productService';
-import { addToBasket } from '../services/basketService';
+import { useCart } from '../context/CartContext';
 import Navbar from './Navbar';
 
-export default function DashboardPage() {
+const DashboardPage = memo(function DashboardPage() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [quantities, setQuantities] = useState({});
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const { addItem } = useCart();
 
-  const showToast = (message, isError = false) => {
+  const showToast = useCallback((message, isError = false) => {
     setToastMessage({ message, isError });
     setTimeout(() => {
       setToastMessage(null);
     }, 3000);
-  };
+  }, []);
 
   const [error, setError] = useState('');
 
@@ -36,7 +37,7 @@ export default function DashboardPage() {
     fetchCategories();
   }, []);
 
-  const handleCategoryClick = async (categoryId) => {
+  const handleCategoryClick = useCallback(async (categoryId) => {
     setSelectedCategory(categoryId);
     setLoading(true);
     try {
@@ -54,32 +55,35 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleQuantityChange = (productId, value) => {
+  const handleQuantityChange = useCallback((productId, value) => {
     const parsed = parseInt(value);
     setQuantities((prev) => ({
       ...prev,
       [productId]: parsed > 0 ? parsed : 1,
     }));
-  };
+  }, []);
 
-  const handleAddToCart = async (product) => {
+  const handleAddToCart = useCallback(async (product) => {
     try {
       const quantity = quantities[product.id] || 1;
-      await addToBasket(product.id, quantity);
-      showToast(`${product.name} (x${quantity}) added to basket!`);
+      const result = await addItem(product.id, quantity);
+      if (result.success) {
+        showToast(`${product.name} (x${quantity}) added to basket!`);
+      } else {
+        showToast('Could not add item to basket.', true);
+      }
     } catch (err) {
       console.error('Error adding to basket:', err.response?.data || err.message);
       showToast('Could not add item to basket.', true);
     }
-  };
+  }, [addItem, quantities, showToast]);
 
-  // Helper function to cleanly map the varying category image sizes from Stitch for a 3-item layout
-  const getCategoryClass = (index) => {
+  const getCategoryClass = useCallback((index) => {
     if (index === 0) return "md:col-span-8 group relative overflow-hidden rounded-xl bg-surface-container-low transition-all h-[700px] cursor-pointer";
-    return "group relative overflow-hidden rounded-xl bg-surface-container-low transition-all h-[338px] cursor-pointer"; // half of 700 with gap
-  };
+    return "group relative overflow-hidden rounded-xl bg-surface-container-low transition-all h-[338px] cursor-pointer"; 
+  }, []);
 
   return (
     <>
@@ -279,11 +283,14 @@ export default function DashboardPage() {
         </div>
       </footer>
       {toastMessage && (
-        <div className={`fixed top-24 right-8 z-[100] p-4 rounded-xl shadow-xl border min-w-[300px] flex items-center space-x-3 transition-all duration-300 ${toastMessage.isError ? 'bg-error-container text-error border-error/50' : 'bg-[#34A853]/10 text-white font-bold bg-primary border-primary/20'}`}>
-          <span className="material-symbols-outlined text-[#34A853]">{toastMessage.isError ? 'error' : 'check_circle'}</span>
-          <span className="font-bold text-sm tracking-wide text-on-surface">{toastMessage.message}</span>
+        <div className={`fixed top-24 right-8 z-[100] p-4 rounded-xl shadow-xl border min-w-[300px] flex items-center space-x-3 transition-all duration-300 ${toastMessage.isError ? 'bg-error-container text-error border-error/50' : 'bg-primary text-white border-primary/20 shadow-primary/20'}`}>
+          <span className="material-symbols-outlined">{toastMessage.isError ? 'error' : 'check_circle'}</span>
+          <span className="font-bold text-sm tracking-wide">{toastMessage.message}</span>
         </div>
       )}
     </>
   );
-}
+});
+
+export default DashboardPage;
+;

@@ -83,10 +83,16 @@ namespace InnSales.Services
         public PaymentTransactionPublisher(IConfiguration config, IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            var cs = config["ServiceBus:ConnectionString"]!;
-            var topic = config["ServiceBus:PaymentTopic"]!;
+            var cs = config["ServiceBus:ConnectionString"];
+            var topic = config["ServiceBus:PaymentTopic"];
+            
+            if (string.IsNullOrWhiteSpace(cs) || cs.Contains("UseDevelopmentEmulator"))
+            {
+                Console.WriteLine("[SB-PUBLISHER] Service Bus connection string is invalid or uses emulator. Publisher will use fallback mode.");
+                return;
+            }
+            
             Console.WriteLine($"[SB-PUBLISHER] Initializing with ConnectionString: {cs}, Topic: {topic}");
-          
             _client = new ServiceBusClient(cs);
             _sender = _client.CreateSender(topic);
             Console.WriteLine("[SB-PUBLISHER] PaymentTransactionPublisher initialized successfully");
@@ -136,8 +142,8 @@ namespace InnSales.Services
 
         public async ValueTask DisposeAsync()
         {
-            await _sender.DisposeAsync();
-            await _client.DisposeAsync();
+            if (_sender != null) await _sender.DisposeAsync();
+            if (_client != null) await _client.DisposeAsync();
         }
     }
 }

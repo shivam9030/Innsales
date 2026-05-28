@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
-import axios from 'axios';
+import axiosClient from '../api/axiosClient';
 import { useNavigate } from 'react-router-dom';
 
 const CARD_ELEMENT_OPTIONS = {
@@ -51,14 +51,6 @@ const StripePaymentForm = ({ orderId }) => {
       return;
     }
 
-    const authToken = localStorage.getItem('token');
-    
-    if (!authToken) {
-      setMessage('Authentication required.');
-      setLoading(false);
-      return;
-    }
-
     const paymentToken = localStorage.getItem('paymentToken');
 
     if (!paymentToken) {
@@ -68,19 +60,14 @@ const StripePaymentForm = ({ orderId }) => {
     }
 
     try {
-      const response = await axios.post(
-        'http://localhost:5000/api/v1/payment/process', 
+      await axiosClient.post(
+        '/payment/process', 
         {
           orderId,
           token: stripeToken.id,
           currency: 'INR',
           paymentToken: paymentToken,
           cardHolderName,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
         }
       );
       setMessage('Payment successful');

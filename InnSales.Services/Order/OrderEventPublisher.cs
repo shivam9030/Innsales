@@ -1,36 +1,39 @@
 using MockEventGrid;
 using System.Text.Json;
 
-public class OrderEventPublisher : IOrderEventPublisher
+namespace InnSales.Services
 {
-    private readonly MockEventGridBroker _broker;
-
-    public OrderEventPublisher(MockEventGridBroker broker)
+    public class OrderEventPublisher : IOrderEventPublisher
     {
-        _broker = broker;
-    }
+        private readonly MockEventGridBroker _broker;
 
-    public async Task PublishOrderUpdatedAsync(
-        Guid orderId,
-        string customerId,
-        string status)
-    {
-        var ev = new MockEventGridEvent(
-            Subject: $"Order/{orderId}",
-            EventType: "Order.Updated",
-            DataVersion: "1.0",
-            Data: JsonSerializer.SerializeToElement(new
-            {
-                OrderId = orderId,
-                CustomerId = customerId,
-                Status = status,
-                UpdatedAt = DateTime.UtcNow
-            }),
-            EventTime: DateTimeOffset.UtcNow
-        );
+        public OrderEventPublisher(MockEventGridBroker broker)
+        {
+            _broker = broker;
+        }
 
-        Console.WriteLine("Publishing event to MockEventGridBroker..."+$"{orderId}+{customerId}+{status}");
+        public async Task PublishOrderUpdatedAsync(
+            Guid orderId,
+            string customerId,
+            string status)
+        {
+            var ev = new MockEventGridEvent(
+                Subject: $"Order/{orderId}",
+                EventType: "Order.Updated",
+                DataVersion: "1.0",
+                Data: JsonSerializer.SerializeToElement(new
+                {
+                    OrderId = orderId,
+                    CustomerId = customerId,
+                    Status = status,
+                    UpdatedAt = DateTime.UtcNow
+                }),
+                EventTime: DateTimeOffset.UtcNow
+            );
 
-        await _broker.PublishAsync("order-updates-topic", new[] { ev });
+            Console.WriteLine("Publishing event to MockEventGridBroker..." + $"{orderId}+{customerId}+{status}");
+
+            await _broker.PublishAsync("order-updates-topic", new[] { ev });
+        }
     }
 }
